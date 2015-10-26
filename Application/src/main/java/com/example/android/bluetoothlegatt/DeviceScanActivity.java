@@ -16,6 +16,7 @@
 
 package com.example.android.bluetoothlegatt;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
@@ -50,10 +51,17 @@ public class DeviceScanActivity extends ListActivity {
     private static final int REQUEST_ENABLE_BT = 1;
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
+    private static final int kREQUEST_CODE = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // 権限がない場合はリクエスト
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, kREQUEST_CODE);
+        }
+
         getActionBar().setTitle(R.string.title_devices);
         mHandler = new Handler();
 
@@ -156,6 +164,15 @@ public class DeviceScanActivity extends ListActivity {
             mScanning = false;
         }
         startActivity(intent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if ((requestCode == kREQUEST_CODE) &&
+                Manifest.permission.ACCESS_COARSE_LOCATION.equals(permissions[0]) &&
+                (grantResults[0] == PackageManager.PERMISSION_DENIED)) {
+            finish();
+        }
     }
 
     private void scanLeDevice(final boolean enable) {
