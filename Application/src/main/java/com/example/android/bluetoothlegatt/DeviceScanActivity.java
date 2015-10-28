@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,16 +54,10 @@ public class DeviceScanActivity extends ListActivity {
     private static final int REQUEST_ENABLE_BT = 1;
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
-    private static final int kREQUEST_CODE = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // 権限がない場合はリクエスト
-            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, kREQUEST_CODE);
-        }
 
         getActionBar().setTitle(R.string.title_devices);
         mHandler = new Handler();
@@ -128,7 +123,14 @@ public class DeviceScanActivity extends ListActivity {
             if (!mBluetoothAdapter.isEnabled()) {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                return;
             }
+        }
+
+        // アプリに位置情報の権限がない場合はリクエスト
+        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_ENABLE_BT);
+            return;
         }
 
         // Initializes list view adapter.
@@ -148,10 +150,21 @@ public class DeviceScanActivity extends ListActivity {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if ((requestCode == REQUEST_ENABLE_BT) &&
+                Manifest.permission.ACCESS_COARSE_LOCATION.equals(permissions[0]) &&
+                (grantResults[0] == PackageManager.PERMISSION_DENIED)) {
+            finish();
+        }
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         scanLeDevice(false);
-        mLeDeviceListAdapter.clear();
+        if (mLeDeviceListAdapter != null) {
+            mLeDeviceListAdapter.clear();
+        }
     }
 
     @Override
@@ -168,32 +181,28 @@ public class DeviceScanActivity extends ListActivity {
         startActivity(intent);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if ((requestCode == kREQUEST_CODE) &&
-                Manifest.permission.ACCESS_COARSE_LOCATION.equals(permissions[0]) &&
-                (grantResults[0] == PackageManager.PERMISSION_DENIED)) {
-            finish();
-        }
-    }
-
     private void scanLeDevice(final boolean enable) {
+        final android.bluetooth.le.BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
+        if (scanner == null) {
+            return;
+        }
+
         if (enable) {
             // Stops scanning after a pre-defined scan period.
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mScanning = false;
-                    mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
+                    scanner.stopScan(mLeScanCallback);
                     invalidateOptionsMenu();
                 }
             }, SCAN_PERIOD);
 
             mScanning = true;
-            mBluetoothAdapter.getBluetoothLeScanner().startScan(mLeScanCallback);
+            scanner.startScan(mLeScanCallback);
         } else {
             mScanning = false;
-            mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
+            scanner.stopScan(mLeScanCallback);
         }
         invalidateOptionsMenu();
     }
