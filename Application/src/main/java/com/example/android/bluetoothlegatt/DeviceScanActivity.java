@@ -197,7 +197,19 @@ public class DeviceScanActivity extends ListActivity {
 
         public void addDevice(BluetoothDevice device) {
             if(!mLeDevices.contains(device)) {
+                if (IS_DEBUG){
+                    Log.d(TAG, "mLeDevices 已有 "+mLeDevices.size()+" 個, 準備加 "+device );
+                }
                 mLeDevices.add(device);
+
+                if (IS_DEBUG){
+                    Log.d(TAG, "mLeDevices 現在是 "+mLeDevices.size()+" 個");
+                }
+            }else {
+                if (IS_DEBUG){
+                    Log.d(TAG, "mLeDevices 已有 "+mLeDevices.size()+" 個, 該裝備 "+device+" 已存在,不加" );
+                }
+
             }
         }
 
