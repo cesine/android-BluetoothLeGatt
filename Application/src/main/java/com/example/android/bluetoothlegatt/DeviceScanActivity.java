@@ -38,10 +38,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.neovisionaries.bluetooth.ble.advertising.ADPayloadParser;
+import com.neovisionaries.bluetooth.ble.advertising.ADStructure;
+import com.neovisionaries.bluetooth.ble.advertising.IBeacon;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Activity for scanning and displaying available Bluetooth LE devices.
@@ -366,8 +371,40 @@ public class DeviceScanActivity extends ListActivity {
                         Log.d(TAG, "偵測到 BLE: "+device);
 //                        (ScanRecord)scanRecord
 //                        Log.d(TAG, "偵測到 BLE: "+ scanRecord);
-                        printScanRecord(scanRecord);
+                        //printScanRecord(scanRecord);
                     }
+//https://github.com/TakahikoKawasaki/nv-bluetooth
+                    // Parse the payload of the advertising packet.
+                    List<ADStructure> structures =
+                            ADPayloadParser.getInstance().parse(scanRecord);
+                    for (ADStructure structure : structures) {
+                        // If the ADStructure instance can be cast to IBeacon.
+                        if (structure instanceof IBeacon) {
+                            // An iBeacon was found.
+                            IBeacon iBeacon = (IBeacon) structure;
+                            // (1) Proximity UUID
+                            UUID uuid = iBeacon.getUUID();
+
+// (2) Major number
+                            int major = iBeacon.getMajor();
+
+// (3) Minor number
+                            int minor = iBeacon.getMinor();
+
+// (4) Tx Power
+                            int power = iBeacon.getPower();
+                            if (IS_DEBUG){
+                                Log.d(TAG, "=================> iBeacon Major="+major+" Minor="+minor);
+//                        (ScanRecord)scanRecord
+//                        Log.d(TAG, "偵測到 BLE: "+ scanRecord);
+                                //printScanRecord(scanRecord);
+                            }
+
+
+                        }
+                    }
+
+
 
                     mLeDeviceListAdapter.addDevice(device);
                     mLeDeviceListAdapter.notifyDataSetChanged();
