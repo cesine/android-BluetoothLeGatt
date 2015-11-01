@@ -40,6 +40,7 @@ import android.widget.Toast;
 
 import com.neovisionaries.bluetooth.ble.advertising.ADPayloadParser;
 import com.neovisionaries.bluetooth.ble.advertising.ADStructure;
+import com.neovisionaries.bluetooth.ble.advertising.EddystoneUID;
 import com.neovisionaries.bluetooth.ble.advertising.IBeacon;
 
 import java.io.UnsupportedEncodingException;
@@ -378,6 +379,37 @@ public class DeviceScanActivity extends ListActivity {
                     List<ADStructure> structures =
                             ADPayloadParser.getInstance().parse(scanRecord);
                     for (ADStructure structure : structures) {
+
+                        if (structure instanceof EddystoneUID) {
+
+                            // Eddystone UID
+                        EddystoneUID es = (EddystoneUID) structure;
+
+// (1) Calibrated Tx power at 0 m.
+                        int power = es.getTxPower();
+
+// (2) 10-byte Namespace ID
+                        byte[] namespaceId = es.getNamespaceId();
+                        String namespaceIdAsString = es.getNamespaceIdAsString();
+
+// (3) 6-byte Instance ID
+                        byte[] instanceId = es.getInstanceId();
+                        String instanceIdAsString = es.getInstanceIdAsString();
+
+// (4) 16-byte Beacon ID
+                        byte[] beaconId = es.getBeaconId();
+                        String beaconIdAsString = es.getBeaconIdAsString();
+
+                            if (IS_DEBUG){
+                                Log.d(TAG, "###############=================> Eddystone namespace="+namespaceIdAsString+" instance="+instanceIdAsString);
+//                        (ScanRecord)scanRecord
+//                        Log.d(TAG, "偵測到 BLE: "+ scanRecord);
+                                //printScanRecord(scanRecord);
+                            }
+
+
+                        }
+
                         // If the ADStructure instance can be cast to IBeacon.
                         if (structure instanceof IBeacon) {
                             // An iBeacon was found.
