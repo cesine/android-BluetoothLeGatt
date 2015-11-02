@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.example.android.bluetoothlegatt.IndexActivity">
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="BLE Device Scan"
+        android:onClick="onClickBtn1"
+        android:id="@+id/btn1"
+       />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="iBeacon Scan"
+        android:onClick="onClickBtn2"
+        android:id="@+id/btn2" />
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Eddystone Scan"
+        android:visibility="gone"
+        android:onClick="onClickBtn3"
+        android:id="@+id/btn3" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Others Scan"
+        android:onClick="onClickBtn4"
+        android:id="@+id/btn4" />
+
+</LinearLayout>

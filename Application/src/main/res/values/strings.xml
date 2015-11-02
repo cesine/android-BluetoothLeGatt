@@ -33,4 +33,8 @@
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
+    <string name="title_activity_index">IndexActivity</string>
+    <string name="title_devices_ibeacon">iBeacn Scan</string>
+    <string name="title_devices_eddystone">Eddystone Scan</string>
+    <string name="title_devices_non_ibeacon">non-iBeacon Scan</string>
 </resources>
