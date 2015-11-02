@@ -19,7 +19,7 @@
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="iBeacon Scan"
+        android:text="@string/title_devices_ibeacon"
         android:onClick="onClickBtn2"
         android:id="@+id/btn2" />
     <Button
@@ -33,7 +33,7 @@
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Others Scan"
+        android:text="@string/title_devices_non_ibeacon"
         android:onClick="onClickBtn4"
         android:id="@+id/btn4" />
 
